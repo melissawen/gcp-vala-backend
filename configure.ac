@@ -110,7 +110,9 @@ dnl Find gedit
 dnl ================================================================
 PKG_CHECK_MODULES([GEDIT], [gedit >= 3.0])
 
-GEDIT_GIR_DIR="${datadir}/gedit/gir-1.0"
+gedit_prefix=`$PKG_CONFIG --variable=prefix gedit`
+
+GEDIT_GIR_DIR="$gedit_prefix/share/gedit/gir-1.0"
 AC_SUBST(GEDIT_GIR_DIR)
 
 GEDIT_API_VERSION=3.0
