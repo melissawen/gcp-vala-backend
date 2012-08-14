@@ -208,7 +208,7 @@ namespace Gcp.C
 		                                                    RegexError,
 		                                                    CompileArgsError
 		{
-			File wd = source.get_parent();
+			File wd = makefile.get_parent();
 			string basen = source.get_basename();
 
 			int idx = basen.last_index_of_char('.');
