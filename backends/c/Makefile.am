@@ -18,7 +18,7 @@ libgcpbackendc_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(LLVM_LI
 
 valapkgs = gio-2.0 gee-1.0 clang gcp gtk+-3.0 gtksourceview-3.0 gedit-3.0 libpeas-1.0
 
-VALAFLAGS = \
+AM_VALAFLAGS = \
 	--vapidir $(top_srcdir)/src \
 	--vapidir $(top_srcdir)/vapi \
 	$(foreach pkg,$(valapkgs),--pkg $(pkg))

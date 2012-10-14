@@ -90,7 +90,7 @@ MAINTAINERCLEANFILES = 		\
 gcphdir = $(prefix)/include/gedit-$(GEDIT_API_VERSION)/gcp
 gcph_HEADERS = gcp.h
 
-VALAFLAGS = \
+AM_VALAFLAGS = \
 	--vapidir $(top_srcdir)/vapi \
 	--header gcp.h \
 	--vapi gcp.vapi \
