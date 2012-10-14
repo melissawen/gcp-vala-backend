@@ -114,7 +114,7 @@ public class SourceIndex : Object
 				}
 			}
 
-			d_index.insert_before(iter, wrapper);
+			Sequence.insert_before(iter, wrapper);
 
 			while (!iter.is_end() && wrapper.range.contains_range(iter.get().range))
 			{
@@ -197,7 +197,7 @@ public class SourceIndex : Object
 
 			if (iter != null)
 			{
-				d_index.remove(iter);
+				Sequence.remove(iter);
 			}
 		});
 	}
@@ -312,7 +312,7 @@ public class SourceIndex : Object
 
 	public void clear()
 	{
-		d_index.remove_range(d_index.get_begin_iter(), d_index.get_end_iter());
+		Sequence.remove_range(d_index.get_begin_iter(), d_index.get_end_iter());
 	}
 
 	private int compare_func(Wrapper a, Wrapper b)
