@@ -49,20 +49,25 @@ EXTRA_DIST = $(NOINSTHFILES)
 
 libgcp_la_SOURCES = $(SOURCES)
 
+libgcp_la_VALAFLAGS = \
+	--vapidir $(top_srcdir)/vapi \
+	--header gcp.h \
+	--vapi gcp.vapi \
+	--library libgcp \
+	--gir Gcp-3.0.gir \
+	--pkg gio-2.0 \
+	--pkg gee-1.0 \
+	--pkg gcp-utils \
+	--pkg gtk+-3.0 \
+	--pkg gtksourceview-3.0 \
+	--pkg gedit-3.0 \
+	--pkg libpeas-1.0 \
+	--pkg gobject-introspection-1.0 \
+	--pkg posix \
+	--pkg config
+
 libgcp_la_CFLAGS = $(GCP_CFLAGS) $(GEDIT_CFLAGS) -I$(top_srcdir) -w
 libgcp_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(GEDIT_LIBS)
-
-valapkgs = 				\
-	gio-2.0 			\
-	gee-1.0 			\
-	gcp-utils 			\
-	gtk+-3.0 			\
-	gtksourceview-3.0 		\
-	gedit-3.0 			\
-	libpeas-1.0 			\
-	gobject-introspection-1.0	\
-	posix				\
-	config
 
 INTROSPECTION_COMPILER_ARGS = --includedir $(GEDIT_GIR_DIR)
 
@@ -89,14 +94,6 @@ MAINTAINERCLEANFILES = 		\
 
 gcphdir = $(prefix)/include/gedit-$(GEDIT_API_VERSION)/gcp
 gcph_HEADERS = gcp.h
-
-AM_VALAFLAGS = \
-	--vapidir $(top_srcdir)/vapi \
-	--header gcp.h \
-	--vapi gcp.vapi \
-	--library libgcp \
-	--gir Gcp-3.0.gir \
-	$(foreach pkg,$(valapkgs),--pkg $(pkg))
 
 GITIGNOREFILES =			\
 	$(vala_sources:.vala=.c)
