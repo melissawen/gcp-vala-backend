@@ -53,6 +53,7 @@ AC_SUBST(GCP_CFLAGS)
 AC_PATH_PROG([LLVM_CONFIG], [llvm-config], [])
 
 if test "x$LLVM_CONFIG" = "x"; then
+	clang_enabled=no
 	AC_MSG_WARN([could not find llvm-config])
 else
 	dnl find out the libdir of llvm
