@@ -36,14 +36,8 @@ plugin_DATA = gcpbackendc.plugin
 EXTRA_DIST = \
 	gcpbackendc.plugin
 
-CLEANFILES = \
-	libgcpbackendc_la_vala.stamp \
-	$(BUILT_SOURCES)
-
-install-data-hook:
-	rm -f $(GCP_BACKENDS_LIBS_DIR)/libgcpbackendc.la
-
 GITIGNOREFILES =			\
-	$(SOURCES:.vala=.c)
+	$(SOURCES:.vala=.c)		\
+	libgcpbackendc_la_vala.stamp
 
 -include $(top_srcdir)/git.mk
