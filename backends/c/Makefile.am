@@ -4,7 +4,6 @@ plugin_LTLIBRARIES = libgcpbackendc.la
 
 SOURCES = \
 	gcp-c-backend.vala \
-	gcp-c-config.vala \
 	gcp-c-document.vala \
 	gcp-c-compile-args.vala \
 	gcp-c-translation-unit.vala \
@@ -16,7 +15,16 @@ libgcpbackendc_la_SOURCES = $(SOURCES)
 libgcpbackendc_la_CFLAGS = $(GCP_CFLAGS) $(LLVM_CFLAGS) $(GEDIT_CFLAGS) -I$(top_srcdir)/src -w
 libgcpbackendc_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(LLVM_LIBS)
 
-valapkgs = gio-2.0 gee-1.0 clang gcp gtk+-3.0 gtksourceview-3.0 gedit-3.0 libpeas-1.0
+valapkgs = 			\
+	gio-2.0 		\
+	gee-1.0 		\
+	clang 			\
+	gcp 			\
+	gtk+-3.0 		\
+	gtksourceview-3.0 	\
+	gedit-3.0 		\
+	libpeas-1.0 		\
+	config
 
 AM_VALAFLAGS = \
 	--vapidir $(top_srcdir)/src \

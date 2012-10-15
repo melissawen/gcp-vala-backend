@@ -6,6 +6,7 @@ namespace Gcp.Config
 	public const string GCP_LIBS_DIR;
 	public const string GCP_DATA_DIR;
 	public const string VERSION;
+	public const string LLVM_VERSION;
 }
 
 // ex:ts=4 noet

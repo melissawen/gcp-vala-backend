@@ -218,7 +218,6 @@ data/gcp.plugin
 src/Makefile
 backends/Makefile
 backends/c/Makefile
-backends/c/gcp-c-config.vala
 backends/c/gcpbackendc.plugin
 backends/python/Makefile
 backends/python/gcpbackendpython/Makefile

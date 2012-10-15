@@ -470,7 +470,7 @@ namespace Gcp.C
 				// Note: this is a hack but it seems clang 2.8 will not properly
 				// add its default include search directories
 				args += "-I";
-				args += "/usr/lib/clang/%s/include".printf(Config.llvm_version());
+				args += "/usr/lib/clang/%s/include".printf(Gcp.Config.LLVM_VERSION);
 
 				Log.debug("Compile flags for `%s': `%s'",
 				          file.get_path(),
