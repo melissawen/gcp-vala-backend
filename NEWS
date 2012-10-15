@@ -1,4 +1,14 @@
 ===========================
+gedit-code-assistance 0.1.4
+===========================
+
+New Features and Fixes
+======================
+Added XML backend (Jono Finger)
+Added python backend (Jesse van den Kieboom)
+Moved backends to peas based plugin system (Jesse van den Kieboom)
+
+===========================
 gedit-code-assistance 0.1.3
 ===========================
 
