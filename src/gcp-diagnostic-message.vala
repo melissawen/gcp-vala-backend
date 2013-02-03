@@ -341,7 +341,8 @@ public class DiagnosticMessage : EventBox
 			width = minwidth;
 		}
 
-		base.get_preferred_height_for_width(width, out d_height, null);
+		int natural_height;
+		base.get_preferred_height_for_width(width, out d_height, out natural_height);
 		d_width = width;
 
 		int yc = alignyat - d_height * aligny;
