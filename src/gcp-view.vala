@@ -204,7 +204,12 @@ class View : Object
 			d_buffer.tag_table.remove(d_semanticTag);
 		}
 
-		GtkSource.Style? style = d_buffer.style_scheme.get_style("search-match");
+		GtkSource.Style? style = null;
+		if (d_buffer.style_scheme != null)
+		{
+			style = d_buffer.style_scheme.get_style("search-match");
+		}
+
 		Gdk.Color bg = {0, 0, 0, 0};
 		Gdk.Color fg = {0, 0, 0, 0};
 
