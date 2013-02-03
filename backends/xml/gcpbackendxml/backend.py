@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 from gi.repository import GObject, Gcp
-from document import Document
+from .document import Document
 
 class Backend(GObject.Object, Gcp.Backend):
     size = GObject.property(type=int, flags = GObject.PARAM_READABLE)

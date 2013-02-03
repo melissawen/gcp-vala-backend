@@ -49,7 +49,7 @@ class BackendManager
 		d_engine.add_search_path(Gcp.Config.GCP_BACKENDS_DIR,
 		                         Gcp.Config.GCP_BACKENDS_DATA_DIR);
 
-		d_engine.enable_loader("python");
+		d_engine.enable_loader("python3");
 
 		// require the gcp gir
 		string tpdir = Path.build_filename(Gcp.Config.GCP_LIBS_DIR,

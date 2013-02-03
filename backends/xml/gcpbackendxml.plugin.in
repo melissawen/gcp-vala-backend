@@ -1,6 +1,6 @@
 [Plugin]
 Module=gcpbackendxml
-Loader=python
+Loader=python3
 IAge=3
 Name=Code Assistance XML Backend
 Hidden=yes
