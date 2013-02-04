@@ -96,17 +96,11 @@ namespace Gcp
 			           "Gcp.Error",
 			           colors.error_color);
 
-			if (d_locationTag == null)
-			{
-				d_locationTag = d_buffer.create_tag("Gcp.Location",
-				                                    weight: Pango.Weight.BOLD);
-			}
+			ensure_tag(ref d_locationTag, "Gcp.Location");
+			d_locationTag.weight = Pango.Weight.BOLD;
 
-			if (d_fixitTag == null)
-			{
-				d_fixitTag = d_buffer.create_tag("Gcp.Fixit",
-				                                 strikethrough: true);
-			}
+			ensure_tag(ref d_fixitTag, "Gcp.Fixit");
+			d_fixitTag.strikethrough = true;
 		}
 
 		public TextTag? error_tag
