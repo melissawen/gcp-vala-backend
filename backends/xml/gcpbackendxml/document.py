@@ -257,7 +257,8 @@ class Document(Gcp.Document, Gcp.DiagnosticSupport):
         self.reparse_timeout = 0
 
         self.reparse_thread = ParseThread(self, self.on_parse_finished)
-        self.reparse_thread.run()
+        self.reparse_thread.daemon = True
+        self.reparse_thread.start()
 
         return False
 
