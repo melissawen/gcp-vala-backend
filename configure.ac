@@ -109,7 +109,7 @@ AC_ARG_ENABLE([local],
 dnl ================================================================
 dnl Find gedit
 dnl ================================================================
-PKG_CHECK_MODULES([GEDIT], [gedit >= 3.0])
+PKG_CHECK_MODULES([GEDIT], [gedit >= 3.7.6])
 
 gedit_prefix=`$PKG_CONFIG --variable=prefix gedit`
 
