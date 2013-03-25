@@ -6,7 +6,7 @@ Installation from git:
 1) Install the following packages for your distribution
    (packages names can differ):
 
-	1) gedit-devel (>= 3.0)
+	1) gedit-devel (>= 3.8)
 	2) llvm-devel (>= 2.8)
 	3) vala
 	4) libgee-devel
