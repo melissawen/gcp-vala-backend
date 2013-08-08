@@ -211,6 +211,8 @@ fi
 
 AM_CONDITIONAL(XML_ENABLED, test x"$enable_xml" = "xyes")
 
+PKG_CHECK_MODULES(VALA_ENABLED, [	libvala-0.20 >= 0.20 ])
+
 AC_CONFIG_FILES([
 Makefile
 data/Makefile
@@ -225,6 +227,7 @@ backends/python/gcpbackendpython.plugin
 backends/xml/Makefile
 backends/xml/gcpbackendxml/Makefile
 backends/xml/gcpbackendxml.plugin
+backends/vala/Makefile
 vapi/Makefile
 ])
 
@@ -245,5 +248,5 @@ Configuration:
 		c:		$clang_enabled ($LLVM_VERSION)
 		python:		$enable_python
 		xml:		$enable_xml
+		vala:		$vala_enabled
 "
-

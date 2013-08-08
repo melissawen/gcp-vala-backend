@@ -4,6 +4,8 @@ if CLANG_ENABLED
 SUBDIRS += c
 endif
 
+SUBDIRS += vala
+
 if PYTHON_ENABLED
 SUBDIRS += python
 endif
