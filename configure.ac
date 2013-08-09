@@ -211,7 +211,7 @@ fi
 
 AM_CONDITIONAL(XML_ENABLED, test x"$enable_xml" = "xyes")
 
-PKG_CHECK_MODULES(VALA_ENABLED, [	libvala-0.20 >= 0.20 ])
+PKG_CHECK_MODULES(VALA,	[ libvala-0.22 ])
 
 AC_CONFIG_FILES([
 Makefile
