@@ -8,8 +8,8 @@ SOURCES = \
 
 libgcpbackendvala_la_SOURCES = $(SOURCES)
 
-libgcpbackendvala_la_CFLAGS = $(GCP_CFLAGS) $(GEDIT_CFLAGS) $(LIBVALA_CFLAGS) -I$(top_srcdir)/src -w
-libgcpbackendvala_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(LIBVALA_LIBS)
+libgcpbackendvala_la_CFLAGS = $(GCP_CFLAGS) $(GEDIT_CFLAGS) $(VALA_CFLAGS) -I$(top_srcdir)/src -w
+libgcpbackendvala_la_LDFLAGS = -module -shared -avoid-version $(GCP_LIBS) $(VALA_LIBS)
 
 valapkgs = 			\
 	gio-2.0 		\

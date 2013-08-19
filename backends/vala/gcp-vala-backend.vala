@@ -19,7 +19,19 @@ namespace Gcp.Vala{
 	  protected override void on_document_changed(Gcp.Document doc)
 	  {
 		  base.on_document_changed(doc);
+
+		  Document d = doc as Document;
+
+		  d.update();
 	  }
-	  
   }
+}
+
+[ModuleInit]
+public void peas_register_types (TypeModule module)
+{
+	Peas.ObjectModule mod = module as Peas.ObjectModule;
+
+	mod.register_extension_type (typeof (Gcp.Backend),
+	                             typeof (Gcp.Vala.Backend));
 }
