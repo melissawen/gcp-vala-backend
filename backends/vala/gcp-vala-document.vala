@@ -1,5 +1,5 @@
 using Gtk, Vala;
-class 
+ 
 namespace Gcp.Vala{
   public class Diagnostic : Report {
     private Gcp.Vala.Document doc;
@@ -7,10 +7,13 @@ namespace Gcp.Vala{
     public Diagnostic(Gcp.Vala.Document doc){
       this.doc = doc;
     }
+    
     public override void err (SourceReference? source, string message) {
       Gcp.SourceIndex diags;
       diags = new Gcp.SourceIndex();
-      Gcp.SourceLocation loc;
+      Gcp.SourceLocation loc, loc_end;
+      SourceRange[] s_range;
+      Gcp.Diagnostic.Fixit[] fixit;
       
       if (!enable_warnings) { return; }
       if (source != null){
@@ -19,15 +22,45 @@ namespace Gcp.Vala{
 		    File? sfile = filename != null ? File.new_for_path(filename) : null;
 		    
         loc = new Gcp.SourceLocation(sfile, source.begin.line, source.begin.column);
-        stderr.printf("adding ... \n");
-        diags.add(new Gcp.Diagnostic(Gcp.Diagnostic.Severity.WARNING,
+        loc_end = new Gcp.SourceLocation(sfile, source.end.line, source.end.column);
+        stderr.printf("error: " +message+"\n");
+        s_range = new Gcp.SourceRange[] { new SourceRange(loc, loc_end)};
+        fixit = new Gcp.Diagnostic.Fixit[] {};
+        diags.add(new Gcp.Diagnostic(Gcp.Diagnostic.Severity.ERROR,
                                          loc,
-                                         new Gcp.SourceRange[1],
-                                         new Gcp.Diagnostic.Fixit[1],
+                                         s_range,
+                                         fixit,
                                          message));
       }
       this.doc.on_parse_finished(diags);
     }
+    
+    /*public override void warn (SourceReference? source, string message) {
+      Gcp.SourceIndex diags;
+      diags = new Gcp.SourceIndex();
+      Gcp.SourceLocation loc, loc_end;
+      SourceRange[] s_range;
+      Gcp.Diagnostic.Fixit[] fixit;
+      
+      if (!enable_warnings) { return; }
+      if (source != null){
+
+        string? filename = source.file.filename;
+		    File? sfile = filename != null ? File.new_for_path(filename) : null;
+		    
+        loc = new Gcp.SourceLocation(sfile, source.begin.line, source.begin.column);
+        loc_end = new Gcp.SourceLocation(sfile, source.end.line, source.end.column);
+        stderr.printf("warning: " +message);
+        s_range = new Gcp.SourceRange[] { new SourceRange(loc, loc_end)};
+        fixit = new Gcp.Diagnostic.Fixit[] {};
+        diags.add(new Gcp.Diagnostic(Gcp.Diagnostic.Severity.WARNING,
+                                         loc,
+                                         s_range,
+                                         fixit,
+                                         message));
+      }
+      this.doc.on_parse_finished(diags);
+    }*/
   }
   
   public class ParseThread{
@@ -114,6 +147,7 @@ namespace Gcp.Vala{
 	  }
 	  
 	  public void update(){
+	    stderr.printf("update\n");
 	    if (this.reparse_timeout != 0){
 	      Source.remove(this.reparse_timeout);
 	    }
