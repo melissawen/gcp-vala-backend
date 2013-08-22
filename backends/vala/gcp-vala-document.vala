@@ -165,6 +165,7 @@ namespace Gcp.Vala{
 	    this.d_diagnosticsLock.lock();
       this.d_diagnostics = diags;
       this.d_diagnosticsLock.unlock();
+      diagnostics_updated();
 	  } 
   }  
 }
