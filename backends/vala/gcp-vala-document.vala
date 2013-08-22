@@ -1,5 +1,5 @@
 using Gtk, Vala;
-
+class 
 namespace Gcp.Vala{
   public class Diagnostic : Report {
     private Gcp.Vala.Document doc;
@@ -10,21 +10,22 @@ namespace Gcp.Vala{
     public override void err (SourceReference? source, string message) {
       Gcp.SourceIndex diags;
       diags = new Gcp.SourceIndex();
-      stderr.printf("diag");
-      /*Gcp.SourceLocation loc;
+      Gcp.SourceLocation loc;
       
       if (!enable_warnings) { return; }
       if (source != null){
+
         string? filename = source.file.filename;
 		    File? sfile = filename != null ? File.new_for_path(filename) : null;
 		    
         loc = new Gcp.SourceLocation(sfile, source.begin.line, source.begin.column);
+        stderr.printf("adding ... \n");
         diags.add(new Gcp.Diagnostic(Gcp.Diagnostic.Severity.WARNING,
                                          loc,
                                          new Gcp.SourceRange[1],
                                          new Gcp.Diagnostic.Fixit[1],
                                          message));
-      }*/
+      }
       this.doc.on_parse_finished(diags);
     }
   }
@@ -47,7 +48,6 @@ namespace Gcp.Vala{
 		  
 		  this.reporter = reporter;
 		  //this.source_file = null;
-		  
 		  TextIter start;
 		  TextIter end;
 
@@ -114,7 +114,6 @@ namespace Gcp.Vala{
 	  }
 	  
 	  public void update(){
-	    stderr.printf("Update\n");
 	    if (this.reparse_timeout != 0){
 	      Source.remove(this.reparse_timeout);
 	    }
@@ -123,18 +122,15 @@ namespace Gcp.Vala{
 	  }
 	  
 	  public void on_reparse_timeout(){
-	    stderr.printf("On reparse timeout");
 	    this.reporter = new Diagnostic(this);
 	    this.reparse_thread = new ParseThread(this, this.reporter);
-	    this.reparse_thread.start_parse_thread.begin;
+	    this.reparse_thread.start_parse_thread();
 	  }
 	  
 	  public void on_parse_finished(Gcp.SourceIndex diags){
-	    /*this.d_diagnosticsLock.lock();
+	    this.d_diagnosticsLock.lock();
       this.d_diagnostics = diags;
-      this.d_diagnosticsLock.unlock();*/
-      stderr.printf("On parse finished");
-	  }
-	   
-  } 
+      this.d_diagnosticsLock.unlock();
+	  } 
+  }  
 }
