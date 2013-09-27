@@ -3,14 +3,16 @@ using Gtk, Vala;
 namespace Gcp.Vala{
   public class Diagnostic : Report {
     private Gcp.Vala.Document doc;
+    private Gcp.SourceIndex diags;
   
-    public Diagnostic(Gcp.Vala.Document doc){
+    public Diagnostic(Gcp.Vala.Document doc, Gcp.SourceIndex diags){
       this.doc = doc;
+      this.diags = diags;
     }
     
     public void diags_report(SourceReference? source, string message, Gcp.Diagnostic.Severity severity){
-      Gcp.SourceIndex diags;
-      diags = new Gcp.SourceIndex();
+      /*Gcp.SourceIndex diags;
+      diags = new Gcp.SourceIndex();*/
       Gcp.SourceLocation loc, loc_end;
       SourceRange[] s_range;
       Gcp.Diagnostic.Fixit[] fixit;
@@ -26,18 +28,26 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
         stderr.printf("error: " +message+"\n");
         s_range = new Gcp.SourceRange[] { new SourceRange(loc, loc_end)};
         fixit = new Gcp.Diagnostic.Fixit[] {};
-        diags.add(new Gcp.Diagnostic(severity,
+        this.diags.add(new Gcp.Diagnostic(severity,
                                          loc,
                                          s_range,
                                          fixit,
                                          message));
       }
-      this.doc.on_parse_finished(diags);
+      //this.doc.on_parse_finished(diags);
     }
     
     public override void err (SourceReference? source, string message) {
       diags_report(source, message, Gcp.Diagnostic.Severity.ERROR);
     }
+    
+    /*public override void warn (SourceReference? source, string message) {
+      diags_report(source, message, Gcp.Diagnostic.Severity.WARNING);
+    }
+    
+    public override void depr (SourceReference? source, string message) {
+      diags_report(source, message, Gcp.Diagnostic.Severity.WARNING);
+    }*/
   }
   
   public class Document: Gcp.Document, Gcp.DiagnosticSupport{
@@ -45,7 +55,6 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
     private Mutex d_diagnosticsLock;
     private uint reparse_timeout;
     private DiagnosticTags d_tags;
-    private Diagnostic reporter;
     
     public Document(Gedit.Document document){
 		  Object(document: document);
@@ -89,6 +98,7 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	    string? source_contents;
 	    uint idle_finish;
       bool cancelled;
+      Gcp.SourceIndex diags;
       
       source_file = null;
       
@@ -109,10 +119,12 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 		  cancelled = false;
 		  idle_finish = 0;
 		  
-		  on_parse_finished(new Gcp.SourceIndex());
+		  diags = new Gcp.SourceIndex();
+		  
+		  on_parse_finished(diags);
 		  
 		  CodeContext context = new CodeContext ();
-      context.report = new Diagnostic(this);
+      context.report = new Diagnostic(this, diags);
       CodeContext.push (context);
       
       SourceFile vala_sf = new SourceFile (context, SourceFileType.SOURCE, source_file, source_contents, true);
@@ -120,6 +132,7 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
       
       Parser ast = new Parser();
       ast.parse(context);
+      on_parse_finished(diags);
         
       CodeContext.pop();
 	  }
