@@ -2,10 +2,10 @@ using Gtk, Vala;
  
 namespace Gcp.Vala{
   public class Diagnostic : Report {
-    private ParseThread psthread;
+    private Gcp.Vala.Document doc;
   
-    public Diagnostic(ParseThread psthread){
-      this.psthread = psthread;
+    public Diagnostic(Gcp.Vala.Document doc){
+      this.doc = doc;
     }
     
     public void diags_report(SourceReference? source, string message, Gcp.Diagnostic.Severity severity){
@@ -32,7 +32,7 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
                                          fixit,
                                          message));
       }
-      this.psthread.finish_in_idle(diags);
+      this.doc.on_parse_finished(diags);
     }
     
     public override void err (SourceReference? source, string message) {
@@ -40,88 +40,12 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
     }
   }
   
-  public class ParseThread{
-    private string? source_file;
-    private string? source_contents;
-    private uint idle_finish;
-    private bool cancelled;
-    private Gedit.Document doc;
-    private Gcp.Vala.Document doc_vala;
-    private Mutex clock;
-  
-    public ParseThread(Gcp.Vala.Document doc){
-    
-      this.source_file = null;
-      this.doc = doc.document;
-      this.doc_vala = doc;
-      
-      if (doc.location != null){
-			  this.source_file = doc.location.get_path();
-		  }
-		  
-		  if (this.source_file == null){
-		    this.source_file = "<unknown>";
-		  }
-		  
-		  TextIter start;
-		  TextIter end;
-
-		  this.doc.get_bounds(out start, out end);
-		  this.source_contents = this.doc.get_text(start, end, true);
-		  
-		  this.clock = new Mutex();
-		  this.cancelled = false;
-		  this.idle_finish = 0;
-    }
-    
-    public void cancel(){
-      this.clock.lock();
-      this.cancelled = true;
-      if (this.idle_finish != 0){
-        Source.remove(this.idle_finish);
-      }
-      this.clock.unlock();
-    }
-    
-    public async void start_parse_thread(Diagnostic reporter){
-      ThreadFunc<void *> run = () => {
-        CodeContext context = new CodeContext ();
-        context.report = reporter;
-        CodeContext.push (context);
-      
-        SourceFile vala_sf = new SourceFile (context, SourceFileType.SOURCE, this.source_file, this.source_contents, true);
-        context.add_source_file (vala_sf);
-      
-        Parser ast = new Parser();
-        ast.parse(context);
-        
-        CodeContext.pop ();
-        return null;
-		  };
-		  try
-		  {
-			  Thread.create<void *>(run, false);
-			  yield;
-		  }
-		  catch{ }
-    }
-    
-    public void finish_in_idle(Gcp.SourceIndex diags){
-      this.clock.lock();
-      //if (!this.cancelled){
-        /*this.idle_finish = Idle.add(*/this.doc_vala.on_parse_finished(diags);/*);
-      }*/
-      this.clock.unlock();
-    }
-  }
-
   public class Document: Gcp.Document, Gcp.DiagnosticSupport{
     private SourceIndex d_diagnostics;
     private Mutex d_diagnosticsLock;
     private uint reparse_timeout;
     private DiagnosticTags d_tags;
     private Diagnostic reporter;
-    private ParseThread reparse_thread;
     
     public Document(Gedit.Document document){
 		  Object(document: document);
@@ -157,22 +81,54 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	      Source.remove(this.reparse_timeout);
 	    }
 	    
-	    if (this.reparse_thread != null){
-         this.reparse_thread.cancel();
-         this.reparse_thread = null;
-      }
-	    
 	    this.reparse_timeout = Timeout.add(300, () => {this.reparse_timeout = 0; on_reparse_timeout(); return false;});		  
 	  }
 	  
+	  public void update_diagnostic(Gedit.Document doc){
+	    string? source_file;
+	    string? source_contents;
+	    uint idle_finish;
+      bool cancelled;
+      
+      source_file = null;
+      
+      if (doc.location != null){
+			  source_file = doc.location.get_path();
+		  }
+		  
+		  if (source_file == null){
+		    source_file = "<unknown>";
+		  }
+		  
+		  TextIter start;
+		  TextIter end;
+
+		  doc.get_bounds(out start, out end);
+		  source_contents = doc.get_text(start, end, true);
+		  
+		  cancelled = false;
+		  idle_finish = 0;
+		  
+		  on_parse_finished(new Gcp.SourceIndex());
+		  
+		  CodeContext context = new CodeContext ();
+      context.report = new Diagnostic(this);
+      CodeContext.push (context);
+      
+      SourceFile vala_sf = new SourceFile (context, SourceFileType.SOURCE, source_file, source_contents, true);
+      context.add_source_file (vala_sf);
+      
+      Parser ast = new Parser();
+      ast.parse(context);
+        
+      CodeContext.pop();
+	  }
+	  
 	  public void on_reparse_timeout(){
-	    this.reparse_thread = new ParseThread(this);
-	    this.reporter = new Diagnostic(this.reparse_thread);
-	    this.reparse_thread.start_parse_thread(this.reporter);
+	    update_diagnostic(this.document);
 	  }
 	  
 	  public void on_parse_finished(Gcp.SourceIndex diags){
-	    this.reparse_thread = null;
 	    this.d_diagnosticsLock.lock();
       this.d_diagnostics = diags;
       this.d_diagnosticsLock.unlock();
@@ -180,5 +136,4 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	  }
 	  
   }
-
 }
