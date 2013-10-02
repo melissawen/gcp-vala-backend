@@ -44,11 +44,16 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
     public override void depr (SourceReference? source, string message) {
       diags_report(source, message, Gcp.Diagnostic.Severity.WARNING);
     }
+    
+    public override void note (SourceReference? source, string message) {
+      diags_report(source, message, Gcp.Diagnostic.Severity.INFO);
+    }
   }
   
   public class Document: Gcp.Document, Gcp.DiagnosticSupport{
     private SourceIndex d_diagnostics;
     private Mutex d_diagnosticsLock;
+    private Mutex clock;
     private uint reparse_timeout;
     private DiagnosticTags d_tags;
     private uint idle_finish;
@@ -61,6 +66,7 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	  construct{
 	    this.d_diagnostics = new SourceIndex();
 	    this.d_diagnosticsLock = new Mutex();
+	    this.clock = new Mutex();
 	    this.reparse_timeout = 0;
 	  }
 	  
@@ -92,10 +98,12 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	  }
 	  
 	  public void cancel(){
+	    this.clock.lock;
 	    this.cancelled = true;
 	    if (this.idle_finish != 0){
 	      Source.remove(this.idle_finish);
 	    }
+	    this.clock.unlock;
 	  }
 	  
 	  public void update_diagnostic(Gedit.Document doc){
@@ -119,8 +127,10 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 		  doc.get_bounds(out start, out end);
 		  source_contents = doc.get_text(start, end, true);
 		  
+		  this.clock.lock;
 		  cancelled = false;
 		  idle_finish = 0;
+		  this.clock.unlock;
 		  
 		  diags = new Gcp.SourceIndex();
 		  
@@ -133,10 +143,12 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
       
       Parser ast = new Parser();
       ast.parse(context);
+      
+      this.clock.lock;
       if (!this.cancelled){
 		    this.idle_finish = Idle.add(() => {on_parse_finished(diags); return false;});
 		  }
-        
+      this.clock.unlock; 
       CodeContext.pop();
 	  }
 	  
