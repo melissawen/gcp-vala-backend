@@ -51,6 +51,8 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
     private Mutex d_diagnosticsLock;
     private uint reparse_timeout;
     private DiagnosticTags d_tags;
+    private uint idle_finish;
+    private bool cancelled;
     
     public Document(Gedit.Document document){
 		  Object(document: document);
@@ -84,14 +86,21 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 	      Source.remove(this.reparse_timeout);
 	    }
 	    
+	    cancel();
+	    
 	    this.reparse_timeout = Timeout.add(300, () => {this.reparse_timeout = 0; on_reparse_timeout(); return false;});		  
+	  }
+	  
+	  public void cancel(){
+	    this.cancelled = true;
+	    if (this.idle_finish != 0){
+	      Source.remove(this.idle_finish);
+	    }
 	  }
 	  
 	  public void update_diagnostic(Gedit.Document doc){
 	    string? source_file;
 	    string? source_contents;
-	    uint idle_finish;
-      bool cancelled;
       Gcp.SourceIndex diags;
       
       source_file = null;
@@ -115,8 +124,6 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
 		  
 		  diags = new Gcp.SourceIndex();
 		  
-		  on_parse_finished(diags);
-		  
 		  CodeContext context = new CodeContext ();
       context.report = new Diagnostic(this, diags);
       CodeContext.push (context);
@@ -126,7 +133,9 @@ File? sfile = filename != null ? File.new_for_path(filename) : null;
       
       Parser ast = new Parser();
       ast.parse(context);
-      on_parse_finished(diags);
+      if (!this.cancelled){
+		    this.idle_finish = Idle.add(() => {on_parse_finished(diags); return false;});
+		  }
         
       CodeContext.pop();
 	  }
