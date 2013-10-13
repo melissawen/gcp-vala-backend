@@ -1,4 +1,4 @@
-plugindir = $(GCP_BACKENDS_LIBS_DIR)/gcpbackendjavascript
+plugindir = $(GCP_BACKENDS_LIBS_DIR)/gcpbackendjs
 
 plugin_PYTHON = 	\
 	__init__.py	\

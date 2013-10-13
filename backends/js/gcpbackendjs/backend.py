@@ -8,6 +8,7 @@ class Backend(GObject.Object, Gcp.Backend):
         GObject.Object.__init__(self)
 
         self.documents = []
+        raise Exception("Loaded!")
 
     def do_get_property(self, spec):
         if spec.name == 'size':
