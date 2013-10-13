@@ -228,6 +228,9 @@ backends/xml/Makefile
 backends/xml/gcpbackendxml/Makefile
 backends/xml/gcpbackendxml.plugin
 backends/vala/Makefile
+backends/javascript/Makefile
+backends/javascript/gcpbackendjavascript/Makefile
+backends/javascript/gcpbackendjavascript.plugin
 vapi/Makefile
 ])
 

@@ -1,0 +1,13 @@
+[Plugin]
+Module=gcpbackendjavascript
+Loader=python3
+IAge=3
+Name=Code Assistance JavaScript Backend
+Hidden=yes
+Builtin=yes
+Description=Code assistance backend for the JavaScript language
+Authors=Melissa Wen <melissawen@gmail.com>
+Copyright=Copyright © 2013 Melissa Wen
+Website=http://www.gedit.org
+Version=0.2.0
+X-Languages=javascript

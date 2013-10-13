@@ -14,4 +14,6 @@ if XML_ENABLED
 SUBDIRS += xml
 endif
 
+SUBDIRS += javascript
+
 -include $(top_srcdir)/git.mk
