@@ -1,6 +1,5 @@
 from gi.repository import GObject, Gcp, GLib, Gio
 
-from parser import Parser
 import threading
 
 class ParseThread(threading.Thread):
@@ -25,14 +24,12 @@ class ParseThread(threading.Thread):
         self.finishcb = finishcb
 
         self.p_error = None
-        self.parser = Parser()
 
         self.idle_finish = 0
 
     def cancel(self):
         self.clock.acquire()
         self.cancelled = True
-
         if self.idle_finish != 0:
             GLib.source_remove(self.idle_finish)
 
@@ -43,7 +40,9 @@ class ParseThread(threading.Thread):
 
     def run(self):
         # Here we have the lock, reparse now
-        self.p_error = self.parser.parse(source_contents)
+        from gcpbackendjs.parser import Parser
+        self.parser = Parser()
+        self.p_error = self.parser.parse(self.source_contents)
         self.clock.acquire()
 
         if not self.cancelled:
@@ -90,13 +89,13 @@ class Document(Gcp.Document, Gcp.DiagnosticSupport):
     def on_parse_finished(self, p_error):
         self.reparse_thread = None
 
+        diags = Gcp.SourceIndex()
         if p_error:
-        
+            print('has error')
             for e in p_error:
-                diags = Gcp.SourceIndex()
-
-                loc = Gcp.SourceLocation.new(self.props.document.get_location(), e[1], e[2])
-
+                print('create source location....')
+                loc = Gcp.SourceLocation.new(self.props.document.get_location(), int(e[1]), int(e[2]))
+                print('adding diagnostic...')
                 diags.add(Gcp.Diagnostic.new(Gcp.DiagnosticSeverity.ERROR, loc, [], [], e[0]))
 
         self.diagnostics_lock.acquire()
@@ -113,4 +112,3 @@ class Document(Gcp.Document, Gcp.DiagnosticSupport):
         self.diagnostics_lock.release()
 
 # vi:ex:ts=4:et
-

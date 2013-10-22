@@ -26,7 +26,7 @@ __author__ = 'Ruslan Spivak <ruslan.spivak@gmail.com>'
 
 import ply.lex
 
-from unicode_chars import (
+from .unicode_chars import (
     LETTER,
     DIGIT,
     COMBINING_MARK,
@@ -95,8 +95,8 @@ class Lexer(object):
         self.prev_token = None
         self.cur_token = None
         self.next_tokens = []
+        self.lex_error_list = []
         self.build()
-        self.l_error = []
 
     def build(self, **kwargs):
         """Build the lexer."""
@@ -193,7 +193,7 @@ class Lexer(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         token = self.token()
         if not token:
             raise StopIteration
@@ -252,41 +252,7 @@ class Lexer(object):
 
         'LINE_TERMINATOR',
         ) + keywords
-
-    # adapted from https://bitbucket.org/ned/jslex
-    t_regex_REGEX = r"""(?:
-        /                       # opening slash
-        # First character is..
-        (?: [^*\\/[]            # anything but * \ / or [
-        |   \\.                 # or an escape sequence
-        |   \[                  # or a class, which has
-                (?: [^\]\\]     # anything but \ or ]
-                |   \\.         # or an escape sequence
-                )*              # many times
-            \]
-        )
-        # Following characters are same, except for excluding a star
-        (?: [^\\/[]             # anything but \ / or [
-        |   \\.                 # or an escape sequence
-        |   \[                  # or a class, which has
-                (?: [^\]\\]     # anything but \ or ]
-                |   \\.         # or an escape sequence
-                )*              # many times
-            \]
-        )*                      # many times
-        /                       # closing slash
-        [a-zA-Z0-9]*            # trailing flags
-        )
-        """
-
-    t_regex_ignore = ' \t'
-
-    def t_regex_error(self, token):
-        raise TypeError(
-            "Error parsing regular expression '%s' at %s" % (
-                token.value, token.lineno)
-            )
-
+    
     # Punctuators
     t_PERIOD        = r'\.'
     t_COMMA         = r','
@@ -343,6 +309,41 @@ class Lexer(object):
     t_LINE_TERMINATOR = r'[\n\r]+'
 
     t_ignore = ' \t'
+
+    # adapted from https://bitbucket.org/ned/jslex
+    t_regex_REGEX = r"""(?:
+        /                       # opening slash
+        # First character is..
+        (?: [^*\\/[]            # anything but * \ / or [
+        |   \\.                 # or an escape sequence
+        |   \[                  # or a class, which has
+                (?: [^\]\\]     # anything but \ or ]
+                |   \\.         # or an escape sequence
+                )*              # many times
+            \]
+        )
+        # Following characters are same, except for excluding a star
+        (?: [^\\/[]             # anything but \ / or [
+        |   \\.                 # or an escape sequence
+        |   \[                  # or a class, which has
+                (?: [^\]\\]     # anything but \ or ]
+                |   \\.         # or an escape sequence
+                )*              # many times
+            \]
+        )*                      # many times
+        /                       # closing slash
+        [a-zA-Z0-9]*            # trailing flags
+        )
+        """
+
+    t_regex_ignore = ' \t'
+
+    def t_regex_error(self, token):
+        #self.lex_error_list.append(['Error parsing RE', ])
+        '''raise TypeError(
+            "Error parsing regular expression '%s' at %s" % (
+                token.value, token.lineno)
+            )'''
 
     t_NUMBER = r"""
     (?:
@@ -433,5 +434,6 @@ class Lexer(object):
         return token
 
     def t_error(self, token):
-        self.l_error.append(['Illegal character' +str(token.value[0]), token.lineno, token.lexpos])
+        '''print('Illegal character %r at %s:%s after %s' % (
+            token.value[0], token.lineno, token.lexpos, self.prev_token))'''
         token.lexer.skip(1)

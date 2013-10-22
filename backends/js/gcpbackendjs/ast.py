@@ -37,6 +37,13 @@ class Node(object):
     def children(self):
         return self._children_list
 
+    def to_ecma(self):
+        # Can't import at module level as ecmavisitor depends
+        # on ast module...
+        from gcpbackendjs.visitors.ecmavisitor import ECMAVisitor
+        visitor = ECMAVisitor()
+        return visitor.visit(self)
+
 class Program(Node):
     pass
 

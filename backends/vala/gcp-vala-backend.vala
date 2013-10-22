@@ -35,3 +35,4 @@ public void peas_register_types (TypeModule module)
 	mod.register_extension_type (typeof (Gcp.Backend),
 	                             typeof (Gcp.Vala.Backend));
 }
+

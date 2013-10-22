@@ -292,4 +292,3 @@ class Document(Gcp.Document, Gcp.DiagnosticSupport):
         self.diagnostics_lock.release()
 
 # vi:ex:ts=4:et
-

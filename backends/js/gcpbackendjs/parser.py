@@ -26,13 +26,15 @@ __author__ = 'Ruslan Spivak <ruslan.spivak@gmail.com>'
 
 import ply.yacc
 
-import ast
-from lexer import Lexer
+from . import ast
+from .lexer import Lexer
 
 try:
-    import lextab, yacctab
+    from . import lextab, yacctab
+    print("lextab and yacctab imported")
 except ImportError:
     lextab, yacctab = 'lextab', 'yacctab'
+    print("lextab and yacctab NOT imported")
 
 
 class Parser(object):
@@ -69,8 +71,7 @@ class Parser(object):
         # a SyntaxError exception to avoid looping over and
         # over again.
         self._error_tokens = {}
-        self.list_lerror = self.lexer.l_error
-        self.list_perror = []
+        self.u_tk_list = []
 
     def _has_been_seen_before(self, token):
         if token is None:
@@ -84,12 +85,20 @@ class Parser(object):
         key = token.type, token.value, token.lineno, token.lexpos
         self._error_tokens[key] = True
 
-    def raise_syntax_error(self, token):
-        self.list_perror.append(['Unexpected token '+str(token.value), token.lineno, token.lexpos])
+    def _raise_syntax_error(self, token):
+        self.u_tk_list.append(['Unexpected token \"'+token.value+'\"', self.lexer.prev_token.lineno, self.lexer.prev_token.lexpos ])
+        print('Unexpected token (%s, %r) at %s:%s between %s and %s' % (
+                token.type, token.value, token.lineno, token.lexpos,
+                self.lexer.prev_token, self.lexer.token()))
+        #raise SyntaxError(
+        #    'Unexpected token (%s, %r) at %s:%s between %s and %s' % (
+        #        token.type, token.value, token.lineno, token.lexpos,
+        #        self.lexer.prev_token, self.lexer.token())
+        #    )
 
     def parse(self, text, debug=False):
         self.parser.parse(text, lexer=self.lexer, debug=debug)
-        return self.list_perror[] + self.list.lerror[]
+        return self.u_tk_list
 
     def p_empty(self, p):
         """empty :"""
@@ -102,7 +111,7 @@ class Parser(object):
     def p_error(self, token):
         # https://github.com/rspivak/slimit/issues/29
         if self._has_been_seen_before(token):
-            self.raise_syntax_error(token)
+            self._raise_syntax_error(token)
 
         if token is None or token.type != 'SEMI':
             next_token = self.lexer.auto_semi(token)
@@ -112,7 +121,7 @@ class Parser(object):
                 self.parser.errok()
                 return next_token
 
-        self.raise_syntax_error(token)
+        self._raise_syntax_error(token)
 
     # Comment rules
     # def p_single_line_comment(self, p):
